@@ -1,14 +1,17 @@
 const express = require("express");
-const app = express();
-
 const cors = require("cors");
 require("dotenv").config({ path: "./config/env/local.env" });
 
-const port = process.env.PORT || 8000;
+// db config
 const db = require("./config/db");
+db.connect()
+  .then(() => console.log("DB connected"))
+  .catch((e) => console.log("DB connection failed ", e));
 
-// include router
+// include routes
 const postRoutes = require("./modules/posts/post.router");
+
+const app = express();
 
 // enable preflight requests
 app.use(cors());
@@ -20,11 +23,4 @@ app.use(express.urlencoded({ extended: false }));
 //routing
 app.use(process.env.ENDPOINT_API + "/posts", postRoutes);
 
-// starting server
-app.listen(port, () => {
-  // connection test
-  db.connect((err) => {
-    if (err) console.error(err);
-  });
-  console.log(`server is listening on port ${port}`);
-});
+module.exports = app;

@@ -1,20 +1,13 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
 
-const CLIENT = new MongoClient(process.env.MONGO_CONN_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-var db_connect;
+mongoose.Promise = global.Promise;
+const MONGO_CONN_URL = `mongodb+srv://${process.env.DB_username}:${process.env.DB_password}@${process.env.DB_hostname}.mongodb.net/test?retryWrites=true&w=majority`;
 
 module.exports = {
-  connect: (cb) => {
-    CLIENT.connect((err, res) => {
-      if (err || !res) return cb(err);
-      db_connect = res.db("daytona-blog-post");
-      console.log("db connected");
-      return cb();
+  connect: async () => {
+    await mongoose.connect(MONGO_CONN_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
   },
-  getDB: () => db_connect,
 };
